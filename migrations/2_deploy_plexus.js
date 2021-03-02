@@ -1,25 +1,21 @@
-const Wrapper = artifacts.require("wrapper");
-const TokenRewards = artifacts.require("tokenrewards");
-const Oracle = artifacts.require("oracle");
-const Tier1Staking = artifacts.require("tier1Staking");
-const Core = artifacts.require("core");
-const Tier2Farm = artifacts.require("tier2Farm");
-const Tier2Aave= artifacts.require("tier2Aave");
-const Tier2Aggregator = artifacts.require("tier2Aggregator");
-const Tier2Pickle = artifacts.require("tier2Pickle");
+const Wrapper = artifacts.require("WrapAndUnWrap");
+const TokenRewards = artifacts.require("TokenRewards");
+const Oracle = artifacts.require("Oracle");
+const Tier1Staking = artifacts.require("Tier1FarmController");
+const Core = artifacts.require("Core");
+const Tier2Farm = artifacts.require("Tier2FarmController");
+
 
 module.exports = async (deployer) => {
 
     // Deploy all the contracts
-    const wrapper = await deployer.deploy(Wrapper, {overwrite: false});
-    const tokenRewards = await deployer.deploy(TokenRewards, {overwrite: false});
-    const oracle = await deployer.deploy(Oracle, {overwrite: false});
-    const tier1Staking = await deployer.deploy(Tier1Staking, {overwrite: false});
-    const core = await deployer.deploy(Core, {overwrite: false});
-    await deployer.deploy(Tier2Farm, {overwrite: false});
-    await deployer.deploy(Tier2Aave, {overwrite: false});
-    await deployer.deploy(Tier2Aggregator, {overwrite: false});
-    await deployer.deploy(Tier2Pickle, {overwrite: false});
+    const wrapper = await deployer.deploy(Wrapper);
+    const tokenRewards = await deployer.deploy(TokenRewards);
+    const oracle = await deployer.deploy(Oracle);
+    const tier1Staking = await deployer.deploy(Tier1Staking);
+    const core = await deployer.deploy(Core);
+    await deployer.deploy(Tier2Farm);
+   
 
     // Run the setup txns
     const wrapperInstance = await wrapper.deployed();

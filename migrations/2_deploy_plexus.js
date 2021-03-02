@@ -35,6 +35,4 @@ module.exports = async (deployer) => {
     await coreInstance.setOracleAddress(oracleInstance.address);
     await coreInstance.setStakingAddress(tier1StakingInstance.address);
     await coreInstance.setConverterAddress(wrapperInstance.address);
-
-
 }; 

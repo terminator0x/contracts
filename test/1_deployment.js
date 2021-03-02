@@ -10,7 +10,7 @@ contract('CoreContract', async accounts => {
 
     it('Core contract should have been deployed correctly', ()=> {
 
-        console.log(coreContract.address);
+      //  console.log(coreContract.address);
 
         assert(coreContract.address != '');
 

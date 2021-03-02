@@ -166,7 +166,7 @@ library SafeMath {
 }
 
 
-contract WrapAndUnWrap{
+contract WrapAndUnWrapSushi{
 
   using SafeMath
     for uint256;

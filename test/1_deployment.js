@@ -1,4 +1,4 @@
-const CoreContract = artifacts.require("core");
+const CoreContract = artifacts.require("Core");
 
 contract('CoreContract', async accounts => {
 

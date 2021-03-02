@@ -5,7 +5,7 @@ module.exports = {
     teams: {
       url: truffleTeamsUrl,
       network_id: 1,
-      gas: 5500000,
+      gas: 550000000000,
       confirmations: 1,
       timeoutBlocks: 200
     },

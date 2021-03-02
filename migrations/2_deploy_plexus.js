@@ -10,8 +10,8 @@ module.exports = async (deployer) => {
 
     // Deploy all the contracts
     const wrapper = await deployer.deploy(Wrapper);
-    console.log("wrapper done");
     const tokenRewards = await deployer.deploy(TokenRewards);
+    console.log("rewards done");
     const oracle = await deployer.deploy(Oracle);
     const tier1Staking = await deployer.deploy(Tier1Staking);
     const core = await deployer.deploy(Core);

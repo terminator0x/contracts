@@ -1,13 +1,19 @@
 # Plexus Smart Contracts Tests
 
-The testing for the plexus contracts is done using Truffle for sandbox deployment, Mocha for unit-testing and Chai for assertions.
+The testing for the plexus contracts is done using [Hardhat via a mainnet fork](https://hardhat.org/guides/mainnet-forking.html).
+
+## Configuration
+
+Before you run the tests, you need to configure the project by doing the following,
+
+1. Create a new [Alchemy Account](https://alchemyapi.io) if you already don't have one.
+2. Rename the `.env_sample` file to `.env` and set the `ALCHEMY_MAINNET_URL` variable to the mainnet url in your alchemy account above.
 
 ## Run The Tests
 
-To run the tests, make sure you install the latest version of [node.js](https://nodejs.org/en/), [yarn](https://yarnpkg.com/getting-started/install) and then finally install `truffle` globally i.e. `npm install -g truffle`
+To run the tests, make sure you install the latest version of [node.js](https://nodejs.org/en/ and [yarn](https://yarnpkg.com/getting-started/install)
 
-Then install the required node dependencies i.e. `yarn install` and then finally run the tests via the command `truffle test --network teams`
-
+Then install the required node dependencies i.e. `yarn install` and then finally run the tests via the command `npx hardhat test`
 
 ### Test Setup
 

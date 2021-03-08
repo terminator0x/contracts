@@ -93,7 +93,7 @@ contract TokenRewards{
   address ETH_TOKEN_ADDRESS  = address(0x0);
 
   Oracle oracle;
-    address oracleAddress;
+  address public oracleAddress;
 
 
   address payable public owner;

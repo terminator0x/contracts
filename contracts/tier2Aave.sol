@@ -64,7 +64,7 @@ library SafeMath {
 
 
 
-contract Tier2FarmController{
+contract Tier2AaveFarmController{
 
   using SafeMath
     for uint256;

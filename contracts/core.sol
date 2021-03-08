@@ -58,7 +58,7 @@ contract Core{
     uint256 approvalAmount = 1000000000000000000000000000000;
 
     //Reeentrancy
-     uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
     uint256 private _status;
 

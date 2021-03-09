@@ -121,20 +121,20 @@ contract Core{
 
   function deposit(string memory tier2ContractName, address tokenAddress, uint256 amount) nonReentrant() payable public returns (bool){
 
-        ERC20 token;
-       if(tokenAddress==ETH_TOKEN_PLACEHOLDER_ADDRESS){
-                wethToken.deposit{value:msg.value}();
-                tokenAddress=WETH_TOKEN_ADDRESS;
-                token = ERC20(tokenAddress);
-        }
-        else{
+      ERC20 token;
+      if(tokenAddress==ETH_TOKEN_PLACEHOLDER_ADDRESS){
+            wethToken.deposit{value:msg.value}();
+            tokenAddress=WETH_TOKEN_ADDRESS;
+            token = ERC20(tokenAddress);
+      }
+      else{
             token = ERC20(tokenAddress);
             token.transferFrom(msg.sender, address(this), amount);
-        }
-       token.approve(stakingAddress, approvalAmount);
-       bool result = staking.deposit(tier2ContractName, tokenAddress, amount, msg.sender);
-       require(result, "There was an issue in core with your deposit request. Please see logs");
-        return result;
+      }
+      token.approve(stakingAddress, approvalAmount);
+      bool result = staking.deposit(tier2ContractName, tokenAddress, amount, msg.sender);
+      require(result, "There was an issue in core with your deposit request. Please see logs");
+      return result;
 
   }
 

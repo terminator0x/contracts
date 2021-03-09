@@ -21,7 +21,7 @@ module.exports = {
       gas: "auto",
       gasPrice: "auto",
       gasMultiplier: 20,
-      blockGasLimit: 90000000000,
+      blockGasLimit: 9000000000000,
       forking: {
         url: process.env.ALCHEMY_MAINNET_URL,
         blockNumber: 11997864,
@@ -29,6 +29,6 @@ module.exports = {
     }
   },
   mocha: {
-    timeout: 20000
+    timeout: 2000000
   }
 };

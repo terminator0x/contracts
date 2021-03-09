@@ -113,7 +113,7 @@ contract Tier1FarmController{
              "Only owner can call this function."
          );
          _;
- }
+  }
 
  modifier onlyAdmin {
          require(
@@ -142,7 +142,7 @@ contract Tier1FarmController{
 
   }
 
-function updateOracleAddress(address newOracleAddress ) public onlyOwner returns (bool){
+ function updateOracleAddress(address newOracleAddress ) public onlyOwner returns (bool){
     oracleAddress= newOracleAddress;
     oracle = Oracle(newOracleAddress);
     return true;

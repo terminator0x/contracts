@@ -2,9 +2,9 @@
   "name": "plexuscontracts",
   "version": "1.0.0",
   "description": "Yield Farming Aggregator and Plexus Rewards Ecosystem",
-  "main": "truffle-config.js",
+  "main": "hardhat.config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx hardhat test"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
     "dotenv": "^8.2.0",
     "ethereum-waffle": "^3.3.0",
     "ethers": "^5.0.31",
-    "hardhat": "^2.1.1"
+    "hardhat": "^2.1.1",
+    "human-standard-token-abi": "^2.0.0"
   }
 }

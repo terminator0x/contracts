@@ -115,21 +115,13 @@ contract Tier1FarmController{
          _;
   }
 
-  modifier onlyAdmin {
+ modifier onlyAdmin {
          require(
              msg.sender == oracle.getAddress("CORE"),
-             "Only Admin can call this function."
+             "Only owner can call this function."
          );
          _;
-  }
-
-  modifier onlyCoreContract {
-         require(
-             msg.sender == oracle.getAddress("CORE"),
-             "Only the core contract can call this function."
-         );
-         _;
-  }
+ }
 
 
 
@@ -183,7 +175,7 @@ contract Tier1FarmController{
 
 
 
-  function deposit(string memory tier2ContractName, address tokenAddress, uint256 amount, address payable onBehalfOf) onlyCoreContract payable public returns (bool){
+  function deposit(string memory tier2ContractName, address tokenAddress, uint256 amount, address payable onBehalfOf) onlyAdmin payable public returns (bool){
 
     address tier2Contract = tier2StakingContracts[tier2ContractName];
     ERC20 thisToken = ERC20(tokenAddress);

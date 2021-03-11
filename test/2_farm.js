@@ -2,43 +2,25 @@ require("dotenv").config();
 const { expect } = require('chai');
 const { waffle } = require("hardhat");
 const provider = waffle.provider;
-const abi = require('human-standard-token-abi')
+const abi = require('human-standard-token-abi');
+const { setupContracts } = require('./setup');
 
-describe('Re-deploying the plexus ecosystem', () => {
-  let wrapper, tokenRewards, plexusOracle, tier1Staking, core, tier2Farm, owner, addr1, addr2;
+describe('Re-deploying the plexus ecosystem for Farm Tokens', () => {
 
-  beforeEach(async () => {
-    // get the contract factories
-    const Wrapper = await ethers.getContractFactory('WrapAndUnWrap');
-    const TokenRewards = await ethers.getContractFactory('TokenRewards');
-    const PlexusOracle = await ethers.getContractFactory('PlexusOracle');
-    const Tier1Staking = await ethers.getContractFactory('Tier1FarmController');
-    const Core = await ethers.getContractFactory('Core');
-    const Tier2Farm = await ethers.getContractFactory('Tier2FarmController');
-    
-    // get the signers
-    [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
+  // global test vars
+  let wrapper, tokenRewards, plexusOracle, tier1Staking, core, tier2Farm, owner, addr1, coreAsSigner1;
 
-    // then deploy the contracts and wait for them to be mined
-    wrapper = await (await Wrapper.deploy()).deployed();
-    tokenRewards = await (await TokenRewards.deploy()).deployed();
-    plexusOracle = await (await PlexusOracle.deploy()).deployed();
-    tier1Staking = await (await  Tier1Staking.deploy()).deployed();
-    core = await (await Core.deploy()).deployed();
-    tier2Farm = await (await Tier2Farm.deploy()).deployed();
+  const tier2ContractName = "FARM";
+  const farmTokenAddress = process.env.FARM_TOKEN_MAINNET_ADDRESS;
+  const erc20 = new ethers.Contract(farmTokenAddress, abi, provider);
+  const unitAmount = "2";
 
-    // then setup the contracts
-    await tokenRewards.updateOracleAddress(plexusOracle.address);
+  // deploy and setup the contracts
+  before(async () => {
+    [wrapper , tokenRewards, plexusOracle, tier1Staking, core, tier2Farm, owner, addr1 ] = await setupContracts();
 
-    await plexusOracle.updateRewardAddress(tokenRewards.address);
-    await plexusOracle.updateCoreAddress(core.address);
-
-    await core.setOracleAddress(plexusOracle.address);
-    await core.setStakingAddress(tier1Staking.address);
-    await core.setConverterAddress(wrapper.address);
-
-    await tier1Staking.updateOracleAddress(plexusOracle.address);
-    await tier1Staking.addOrEditTier2ChildStakingContract("FARM", tier2Farm.address);
+    // use contract as user/addr1
+    coreAsSigner1 = core.connect(addr1);
   });
 
   describe('Test contract re-deployment', () => {
@@ -80,23 +62,18 @@ describe('Re-deploying the plexus ecosystem', () => {
     });
 
     it('Plexus test user wallet Farm Token balance is equal to zero', async () => {
-        
-        const farmTokenAddress = process.env.FARM_TOKEN_MAINNET_ADDRESS;
-        const erc20 = new ethers.Contract(farmTokenAddress, abi, provider);
-
         // check the farm token balance in the contract account
         const userFarmTokenBalance = Number(ethers.utils.formatEther(await erc20.balanceOf(addr1.address)));
     
         // Before conversion usser Farm Token balance should be zero
         console.log("User farm token balance BEFORE ETH conversion: ", userFarmTokenBalance);
         expect(userFarmTokenBalance).to.be.lte(0);
- 
+
     });
 
     it('Should convert 2 ETH to Farm token from harvest.finance', async () => {
 
        const zeroAddress = process.env.ZERO_ADDRESS;
-       const farmTokenAddress = process.env.FARM_TOKEN_MAINNET_ADDRESS;
        const unitAmount = "2";
 
        // Please note, the number of farm tokens we want to get doesn't matter, so the unit amount is just a placeholder
@@ -119,14 +96,12 @@ describe('Re-deploying the plexus ecosystem', () => {
        // check conversion is successful
        if (status === 1) {
 
-        const erc20 = new ethers.Contract(farmTokenAddress, abi, provider);
-
-        // check the farm token balance in the contract account
-        const userFarmTokenBalance = Number(ethers.utils.formatUnits(await erc20.balanceOf(addr1.address), `ether`));
-    
-        // check if the conversion is successful and the user to have some farm tokens in his wallet
-        console.log("User farm token balance AFTER ETH conversion: ", userFarmTokenBalance);
-        expect(userFarmTokenBalance).to.be.gte(0);
+          // check the farm token balance in the contract account
+          const userFarmTokenBalance = Number(ethers.utils.formatUnits(await erc20.balanceOf(addr1.address), `ether`));
+      
+          // check if the conversion is successful and the user to have some farm tokens in his wallet
+          console.log("User farm token balance AFTER ETH conversion: ", userFarmTokenBalance);
+          expect(userFarmTokenBalance).to.be.gte(0);
 
        }
        // check that the users ETH balance has reduced regardless of the conversion status
@@ -137,17 +112,11 @@ describe('Re-deploying the plexus ecosystem', () => {
     });
 
     it("User should be able to deposit Farm Tokens via the core contract", async () => {
-        const userAddress = addr1.address;
-        const farmTokenAddress = process.env.FARM_TOKEN_MAINNET_ADDRESS;
-        const tier2ContractName = "FARM";
-
-        const unitAmount = "2";
+    
         const farmTokenDepositAmount = ethers.utils.parseEther(unitAmount);
 
-        const erc20 = new ethers.Contract(farmTokenAddress, abi, provider);
-
         // check the user farm token balance in the token contract before deposit
-        const initialUserFarmTokenBalance = Number(ethers.utils.formatEther(await erc20.balanceOf(userAddress)));
+        const initialUserFarmTokenBalance = Number(ethers.utils.formatEther(await erc20.balanceOf(addr1.address)));
         console.log("User farm token balance, BEFORE deposit is: ", initialUserFarmTokenBalance);
         
         // approve the core contract to spend the tokens
@@ -158,11 +127,10 @@ describe('Re-deploying the plexus ecosystem', () => {
         expect(approved.status).to.equal(1);
 
         // check allowance
-        const allowance = Number(ethers.utils.formatEther(await erc20.allowance(userAddress, core.address)));
+        const allowance = Number(ethers.utils.formatEther(await erc20.allowance(addr1.address, core.address)));
         console.log("Farm tokens approved by user for deposit : ", allowance);
 
-        // Then we deposit 2 Farm Tokens into the core contract as addr1
-        let coreAsSigner1 = core.connect(addr1);
+        // Then we deposit 2 Farm Tokens into the core contract as addr1/user
         const deposit = await (await coreAsSigner1.deposit(tier2ContractName, farmTokenAddress, farmTokenDepositAmount)).wait();
 
         // check if the deposit txn is successful
@@ -172,41 +140,38 @@ describe('Re-deploying the plexus ecosystem', () => {
         if (deposit.status) {
 
           // As the contract owner, get the number of farm tokens deposited by the user addr1
-          const userFarmTokensDepositedIntoTieer2Farm = Number(ethers.utils.formatEther(await core.getAmountStakedByUser(farmTokenAddress, userAddress, tier2Farm.address)));
-
-          console.log("Number of Farm Tokens deposited by user into tier2Farm: ", userFarmTokensDepositedIntoTieer2Farm);
+          const userFarmTokensDepositedIntoTier2Farm = Number(ethers.utils.formatEther(await core.getAmountStakedByUser(farmTokenAddress, addr1.address, tier2Farm.address)));
+          console.log("Number of Farm Tokens staked by user into tier2Farm: ", userFarmTokensDepositedIntoTier2Farm);
 
           //check that the user deposit is equal 2 Farm tokens
-          expect(userFarmTokensDepositedIntoTieer2Farm).to.equal(Number(ethers.utils.formatEther(farmTokenDepositAmount)));
+          expect(userFarmTokensDepositedIntoTier2Farm).to.equal(Number(ethers.utils.formatEther(farmTokenDepositAmount)));
 
           // check the user farm token balance in the contract account after deposit
-          const currUserFarmTokenBalance = Number(ethers.utils.formatEther(await erc20.balanceOf(userAddress)));
+          const currUserFarmTokenBalance = Number(ethers.utils.formatEther(await erc20.balanceOf(addr1.address)));
           console.log("User farm token balance, AFTER deposit is: ", currUserFarmTokenBalance);
-
+          
           //check that the initial user Farm token balance is less 2 Tokens
           expect(currUserFarmTokenBalance).to.equal(initialUserFarmTokenBalance - 2);
+
+          const bal= Number(ethers.utils.formatEther(await erc20.balanceOf(tier2Farm.address)));
+          console.log("Tier 2 farm token balance, AFTER deposit is: ", bal);
 
         }
 
     });
 
-
-    it('User should be able to withdraw deposited Farm tokens from the Core Contract', async () => {
-      const userAddress = addr1.address;
-      const farmTokenAddress = process.env.FARM_TOKEN_MAINNET_ADDRESS;
-      const tier2ContractName = "FARM";
-
-      const unitAmount = "2";
+    it('User should be able to withdraw deposited Farm tokens via the Core Contract', async () => {
+    
       const farmTokenWithdrawAmount = ethers.utils.parseEther(unitAmount);
 
-      const erc20 = new ethers.Contract(farmTokenAddress, abi, provider);
+      const bal= Number(ethers.utils.formatEther(await erc20.balanceOf(tier2Farm.address)));
+      console.log("Tier 2 farm token balance, BEFORE withdraw is: ", bal);
 
-      // check the user Farm Token balance in the token contract before withdrawal
-      const initialUserFarmTokenBalance = Number(ethers.utils.formatEther(await erc20.balanceOf(userAddress)));
+      // check the user's Farm Token balance in the token contract before withdrawal
+      const initialUserFarmTokenBalance = Number(ethers.utils.formatEther(await erc20.balanceOf(addr1.address)));
       console.log("User farm token balance, BEFORE withdraw is: ", initialUserFarmTokenBalance);
 
       // We withdraw 2 Farm Tokens from the core contract as addr1/user
-      let coreAsSigner1 = core.connect(addr1);
       const { status } = await (await coreAsSigner1.withdraw(tier2ContractName, farmTokenAddress, farmTokenWithdrawAmount)).wait();
 
       // check if the withdraw txn is successful
@@ -214,13 +179,11 @@ describe('Re-deploying the plexus ecosystem', () => {
 
       // if txn is successful
       if (status) {
+
       }
 
-      
-
+    
     });
-
-
   
   });
 

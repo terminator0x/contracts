@@ -90,7 +90,9 @@ contract Tier2FarmController{
              "Only owner can call this function."
          );
          _;
-  }
+ }
+
+
 
 
 
@@ -185,7 +187,7 @@ contract Tier2FarmController{
     }
 
 
-  function withdraw(address tokenAddress, uint256 amount, address payable onBehalfOf) onlyOwner payable public returns(bool){
+  function withdraw(address tokenAddress, uint256 amount, address payable onBehalfOf) payable public returns(bool){
 
       ERC20 thisToken = ERC20(tokenAddress);
       //uint256 numberTokensPreWithdrawal = getStakedBalance(address(this), tokenAddress);

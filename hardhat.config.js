@@ -4,6 +4,8 @@
 
 require('@nomiclabs/hardhat-waffle');
 require("dotenv").config();
+require('@nomiclabs/hardhat-solhint');
+require('solidity-coverage');
 
 module.exports = {
   defaultNetwork: "hardhat",

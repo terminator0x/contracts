@@ -4,7 +4,6 @@ describe('Deploying the plexus contracts', () => {
   let wrapper, tokenRewards, plexusOracle, tier1Staking, core, tier2Farm, owner, addr1, addr2;
 
   beforeEach(async () => {
-
     // get the contract factories
     const Wrapper = await ethers.getContractFactory('WrapAndUnWrap');
     const TokenRewards = await ethers.getContractFactory('TokenRewards');
@@ -26,6 +25,7 @@ describe('Deploying the plexus contracts', () => {
 
     // then setup the contracts
     await tokenRewards.updateOracleAddress(plexusOracle.address);
+
     await plexusOracle.updateRewardAddress(tokenRewards.address);
     await plexusOracle.updateCoreAddress(core.address);
 
@@ -49,14 +49,17 @@ describe('Deploying the plexus contracts', () => {
     });
 
     it('Should setup the contracts addresses correctly after deployment', async function () {
-        expect(await tokenRewards.oracleAddress()).to.equal(plexusOracle.address);
-        expect(await plexusOracle.rewardAddress()).to.equal(tokenRewards.address);
-        expect(await plexusOracle.coreAddress()).to.equal(core.address);
-        expect(await core.oracleAddress()).to.equal(plexusOracle.address);
-        expect(await core.converterAddress()).to.equal(wrapper.address);
-        expect(await core.stakingAddress()).to.equal(tier1Staking.address);
-        expect(await tier1Staking.oracleAddress()).to.equal(plexusOracle.address);
-        expect(await tier1Staking.tier2StakingContracts("FARM")).to.equal(tier2Farm.address);
+      expect(await tokenRewards.oracleAddress()).to.equal(plexusOracle.address);
+      
+      expect(await plexusOracle.rewardAddress()).to.equal(tokenRewards.address);
+      expect(await plexusOracle.coreAddress()).to.equal(core.address);
+
+      expect(await core.oracleAddress()).to.equal(plexusOracle.address);
+      expect(await core.converterAddress()).to.equal(wrapper.address);
+      expect(await core.stakingAddress()).to.equal(tier1Staking.address);
+
+      expect(await tier1Staking.oracleAddress()).to.equal(plexusOracle.address);
+      expect(await tier1Staking.tier2StakingContracts("FARM")).to.equal(tier2Farm.address);
     });
 
    

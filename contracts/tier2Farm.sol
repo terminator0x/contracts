@@ -90,9 +90,7 @@ contract Tier2FarmController{
              "Only owner can call this function."
          );
          _;
- }
-
-
+  }
 
 
 
@@ -126,7 +124,7 @@ contract Tier2FarmController{
       return true;
   }
 
-  function deposit(address tokenAddress, uint256 amount, address onBehalfOf) payable onlyOwner public returns (bool){
+  function deposit(address tokenAddress, uint256 amount, address onBehalfOf) payable public returns (bool){
 
 
        if(tokenAddress == 0x0000000000000000000000000000000000000000){

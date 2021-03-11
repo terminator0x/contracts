@@ -14,9 +14,13 @@ Before you run the tests, you need to configure the project correctly by doing t
 
 To run the tests, make sure you install the latest version of [node.js](https://nodejs.org/en/ and [yarn](https://yarnpkg.com/getting-started/install)
 
-Then install the required node dependencies i.e. `yarn install` and then finally run the tests via the command `yarn test`
+Then install the required node dependencies i.e. `yarn install` and then finally run the tests via the command 
 
-If you want to run a specific test, you can also do so by specifying the path to the test i.e. `yarn test 1_deploymwnt.js`
+Finally run the tests as follows:
+
+1. To run all tests, run the command `yarn test`
+2. To run a specific test, run a test command specifying the path to the test i.e. `yarn test 1_deployment.js`
+3. You can also check for test coverage via the command `yarn coverage`
 
 ### Test Setup
 
